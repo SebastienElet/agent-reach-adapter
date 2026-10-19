@@ -1,6 +1,6 @@
 {
   "name": "@sebastienelet/agent-reach-adapter",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Pinned Agent-Reach resources and marketplace adaptation for Claude and Codex.",
   "type": "module",
   "license": "BSD-2-Clause",
@@ -27,6 +27,7 @@
     "LICENSE",
     "README.md",
     "tsconfig.json",
+    "oxfmt.config.ts",
     ".oxlintrc.json"
   ],
   "publishConfig": {

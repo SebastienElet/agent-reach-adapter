@@ -65,7 +65,7 @@ test("packages upstream resources for both hosts and preserves an unchanged repl
   const options = await fixture();
   const marketplace = await prepareAgentReachPlugin(options);
   expect(marketplace).toBe(
-    join(options.home, ".local/share/agent-reach/adapter/1.0.0/marketplace"),
+    join(options.home, ".local/share/agent-reach/adapter/0.0.1/marketplace"),
   );
   const plugin = join(marketplace, "plugins/agent-reach");
   expect(await readFile(join(plugin, "LICENSE"), "utf8")).toBe(
@@ -242,7 +242,7 @@ test("refuses a foreign destination and preserves its content", async () => {
   const options = await fixture();
   const destination = join(
     options.home,
-    ".local/share/agent-reach/adapter/1.0.0/marketplace",
+    ".local/share/agent-reach/adapter/0.0.1/marketplace",
   );
   await mkdir(destination, { recursive: true });
   await writeFile(join(destination, "personal.txt"), "keep");

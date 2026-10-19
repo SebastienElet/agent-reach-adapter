@@ -1,0 +1,9 @@
+name: Gitleaks
+description: Scan all Git history for secrets.
+runs:
+  using: docker
+  image: Dockerfile
+  args:
+    - git
+    - --redact
+    - --log-opts=--all

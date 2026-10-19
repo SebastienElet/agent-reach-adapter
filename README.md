@@ -1,13 +1,13 @@
 # @sebastienelet/agent-reach-adapter
 
-Local release candidate for 1.0.0, not published or qualified from npm yet.
+Local release candidate for 0.0.1, not published or qualified from npm yet.
 Complete integration targets macOS ARM64 only. Bun 1.4.3 runs the TypeScript
 entry point directly; no build, Moon, Volta or dotfiles checkout is required.
 
 After publication, acquire the exact version in a durable, dedicated directory:
 
 ```sh
-bun install --exact @sebastienelet/agent-reach-adapter@1.0.0
+bun install --exact --ignore-scripts @sebastienelet/agent-reach-adapter@0.0.1
 bun run agent-reach-adapter plan
 bun run agent-reach-adapter prepare "$HOME"
 bun run agent-reach-adapter doctor
@@ -16,7 +16,7 @@ bun run agent-reach-adapter doctor
 Acquisition runs no lifecycle installer. `plan` reports the pinned upstream
 revision and Python/Node prerequisites. `prepare HOME` requires Git and fetches
 that exact revision, verifies its files, then assembles the marketplace under
-`HOME/.local/share/agent-reach/adapter/1.0.0/marketplace`. It preserves an
+`HOME/.local/share/agent-reach/adapter/0.0.1/marketplace`. It preserves an
 identical replay and refuses divergent files, directories or symlinks. It does
 not replace the historical marketplace or activate a host. Partial acquisition
 can leave a verified upstream cache, but not a partial marketplace.
@@ -51,9 +51,9 @@ Refuse an unknown homonym, preserve unrelated entries, and do not register both
 copies of `agent-reach`. In a clean host configuration, the native commands are:
 
 ```sh
-claude plugin marketplace add "$HOME/.local/share/agent-reach/adapter/1.0.0/marketplace"
+claude plugin marketplace add "$HOME/.local/share/agent-reach/adapter/0.0.1/marketplace"
 claude plugin install agent-reach@agent-reach-adapter --scope user
-codex plugin marketplace add "$HOME/.local/share/agent-reach/adapter/1.0.0/marketplace"
+codex plugin marketplace add "$HOME/.local/share/agent-reach/adapter/0.0.1/marketplace"
 codex plugin add agent-reach@agent-reach-adapter --json
 ```
 
@@ -75,15 +75,49 @@ Panniantong/Agent-Reach MIT license is copied into the prepared plugin alongside
 its adapted references and scripts; `ADAPTER-LICENSE` retains the adapter notice.
 `resources/source.json` records provenance.
 
-Development uses `bun install --frozen-lockfile`, `bun test`, `bun run typecheck`,
-`bun run lint` and `bun run format:check`. Tests and resources ship with the
+Development uses `bun install --frozen-lockfile --ignore-scripts`, `bun test`,
+`bun run typecheck`, `bun run lint` and `bun run format:check`. Tests and resources ship with the
 package. A local tarball smoke is preparation evidence only: registry
 installation, provenance, real Claude/Codex discovery, activation and rollback
 remain release acceptance work. Linux and other architectures are not qualified.
 
-The prepared manual `publish.yml` workflow belongs at the future repository
-root. It uses Bun for dependencies/checks and npm only for CI publication with
-OIDC and provenance. Before running it, create the public repository and configure
-the npm trusted publisher for that exact repository and `publish.yml`, allowing
-`npm publish`. Those external operations require the maintainer's approval.
+Sources, tests, resources and the BSD-2-Clause license were extracted with
+`git filter-repo` from dotfiles PR #568, commit
+`206c4ac44423748bbd08e57733842969625c4c21`. The standalone history preserves
+that package commit; the first standalone version is 0.0.1.
+
+CI runs the existing checks, tests and `bun pm pack --ignore-scripts` on
+macOS 26 and Ubuntu 24.04. Linux checks cover the portable adapter code, not
+complete Linux integration. The official Gitleaks image scans all Git history,
+including the first push. Its local Docker action keeps the image pin in a
+Dockerfile so Dependabot can update it. Dependabot checks Bun dependencies,
+GitHub Actions and the Gitleaks Docker image weekly with a three day
+version-update cooldown.
+JavaScript actions use full commit SHAs and the Gitleaks image uses a content
+digest, with their versions recorded alongside them.
+
+The manual `publish.yml` workflow calls CI before publishing from `main`, using
+the GitHub `npm` environment. Bun installs dependencies and packs `release.tgz`;
+the exact npm CLI dependency publishes that archive with OIDC and provenance.
+Node 24.21.0 is used only for the publishing CLI. No npm token is configured.
+
+To publish:
+
+1. Create the public `SebastienElet/agent-reach-adapter` GitHub repository,
+   add its remote and push `main`. Confirm that CI passes there.
+2. Create the GitHub `npm` environment, restrict it to `main`, and configure any
+   required release approval.
+3. Configure the npm trusted publisher for `@sebastienelet/agent-reach-adapter`:
+   owner `SebastienElet`, repository `agent-reach-adapter`, workflow `publish.yml`,
+   environment `npm`, with direct `npm publish` allowed. If npm requires an
+   initial package bootstrap before these settings are available, complete that
+   separately with a distinct bootstrap version so 0.0.1 remains available for
+   OIDC publication; never add a publishing token to this workflow.
+4. Run **Publish** with `workflow_dispatch` on `main`. Inspect registry version,
+   integrity and provenance before retrying an uncertain publication; never
+   overwrite or unpublish a release as a retry strategy.
+5. Install the exact registry version with Bun on macOS ARM64, outside dotfiles,
+   and qualify preparation, Claude/Codex discovery, activation and rollback
+   before switching existing consumers.
+
 See [npm trusted publishing](https://docs.npmjs.com/trusted-publishers/).
